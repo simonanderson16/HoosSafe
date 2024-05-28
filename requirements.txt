@@ -1,0 +1,16 @@
+Django
+django-allauth == 0.61.1
+python-dotenv
+django-bootstrap-v5
+django-bootstrap-icons
+gunicorn
+asgiref
+django-heroku
+sqlparse
+dj-database-url
+whitenoise
+flask
+boto3 
+django-storages
+Pillow
+django-environ

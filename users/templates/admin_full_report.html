@@ -1,0 +1,185 @@
+{% load bootstrap5 %} {% load bootstrap_icons %} {%bootstrap_css %} {% bootstrap_javascript %}
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'user_home' %}">{% bs_icon 'house' extra_classes="mx-1" %} Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'file_uploads' %}">{% bs_icon 'clipboard' extra_classes="mx-1" %} All Reports</a>
+        </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="{% url 'logout' %}">{% bs_icon 'box-arrow-left' extra_classes="mx-1" %} Logout</a>
+        </li>
+    </ul>
+</nav>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Report Details</title>
+        {% bootstrap_css %} {% bootstrap_javascript %}
+    </head>
+    <body>
+        <div class="container mt-3 d-flex">
+            <div class="card w-50 m-2">
+                <div class="card-header">{{report.title}}</div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Date Reported</h5>
+                                <p class="card-text">{{ report.pub_date_report }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Date of Incident</h5>
+                                <p class="card-text">{{ report.date }}, {{ report.time }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Location of Incident</h5>
+                                <p class="card-text">{{ report.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Type of Incident</h5>
+                                {% if report.type_of_violation == "1" %}
+                                <p class="card-text">Harassment</p>
+                                {% elif report.type_of_violation == "2" %}
+                                <p class="card-text">Bullying</p>
+                                {% elif report.type_of_violation == "3" %}
+                                <p class="card-text">Hazing</p>
+                                {% elif report.type_of_violation == "4" %}
+                                <p class="card-text">Discrimination/Racial Bias</p>
+                                {% elif report.type_of_violation == "5" %}
+                                <p class="card-text">Accessibility Issues</p>
+                                {% elif report.type_of_violation == "6" %}
+                                <p class="card-text">Food Quality or Sanitation</p>
+                                {% elif report.type_of_violation == "7" %}
+                                <p class="card-text">Unsafe Behavior at Social Gatherings</p>
+                                {% elif report.type_of_violation == "8" %}
+                                <p class="card-text">Poorly Lit Areas</p>
+                                {% else %}
+                                <p class="card-text">Other</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Description</h5>
+                                <p class="card-text">{{ report.explain }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Note</h5>
+                                {% if report.note and report.note != " " %}
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="note" id="admintext" rows="3" style="height: 70px; resize: none">
+{{ report.note }}</textarea
+                                        >
+                                        <button type="submit" class="btn btn-primary mt-2">Save Edits</button>
+                                    </div>
+                                </form>
+                                {% else %}
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="note" id="admintext" rows="3" style="height: 70px; resize: none"></textarea>
+                                        <button type="submit" class="btn btn-primary mt-2">Save Note</button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="me-2">Current Status:</p>
+                    {% if report.status == 1 %}
+                    <p class="badge bg-warning rounded-pill p-2">In Progress</p>
+                    {% else %}
+                    <p class="badge bg-success rounded-pill p-2">Resolved</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card w-50 m-2">
+                <div class="card-header">
+                    <div class="card-title">Attached Files</div>
+                    <ul class="nav nav-tabs card-header-tabs" id="fileTabs" role="tablist">
+                        {% for file in report.files.all %}
+                        <li class="nav-item">
+                            <a
+                                class="nav-link {% if forloop.first %}active{% endif %}"
+                                id="tab-{{ forloop.counter }}"
+                                data-bs-toggle="tab"
+                                href="#file-{{ forloop.counter }}"
+                                role="tab"
+                                aria-controls="file-{{ forloop.counter }}"
+                                aria-selected="{{ forloop.first }}"
+                            >
+                                File {{ forloop.counter }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-body tab-content" id="fileTabsContent">
+                    {% for file in report.files.all %}
+                    <div
+                        class="tab-pane {% if forloop.first %}active{% endif %}"
+                        id="file-{{ forloop.counter }}"
+                        role="tabpanel"
+                        aria-labelledby="tab-{{ forloop.counter }}"
+                    >
+                        <embed src="{{ file.file.url }}" type="application/pdf" width="100%" height="500px" />
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="container text-center mt-3">
+            <form method="POST" action="{% url 'admin_full_report' report_id=report.id %}">
+                <a href="{% url 'file_uploads' %}" class="btn btn-secondary mx-2">Back to All Reports</a>
+                {% csrf_token %} {% if report.status == 1 %}
+                <input type="hidden" name="action" value="resolved" />
+                <button type="submit" class="btn btn-success mx-2">Mark as Resolved</button>
+                {% elif report.status == 2 %}
+                <input type="hidden" name="action" value="in_progress" />
+                <button type="submit" class="btn btn-warning mx-2">Mark as In Progress</button>
+                {% endif %}
+                <!-- <a href="{{ report.file.url }}" target="_blank" class="btn btn-primary mx-2">View File in New Tab</a> -->
+            </form>
+        </div>
+        <footer class="mt-auto bg-light text-center text-black py-3" style="font-size: 0.75rem">
+            <p class="footer-small-text">&copy; 2024 CS 3240 Group B-12</p>
+            <p class="footer-small-text">Disclaimer: This system is a class project and is not monitored. Please do not submit real information.</p>
+        </footer>
+    </body>
+</html>

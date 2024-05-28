@@ -1,0 +1,83 @@
+{% load socialaccount %} {% load bootstrap5 %} {% load bootstrap_icons %} {%bootstrap_css %} {% bootstrap_javascript %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Submit a Report</title>
+        {% bootstrap_css %}
+        <style>
+            body {
+                background-color: #f8f9fa;
+            }
+            .form-container {
+                max-width: 600px;
+                margin: auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            input[type="text"],
+            input[type="file"],
+            textarea,
+            select,
+            input[type="date"],
+            input[type="time"] {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+                margin-top: 6px;
+                margin-bottom: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" href="{% url 'user_home' %}">{% bs_icon 'house' extra_classes="mx-1" %} Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" href="{% url 'my_reports' %}">{% bs_icon 'clipboard' extra_classes="mx-1" %} My Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" href="{% url 'report_form' %}">{% bs_icon 'clipboard-plus' extra_classes="mx-1" %} Submit a Report</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link d-flex align-items-center" href="{% url 'logout' %}">{% bs_icon 'box-arrow-left' extra_classes="mx-1" %} Logout</a>
+                    {% else %}
+                    <a class="nav-link d-flex align-items-center" href="{% url 'logout' %}">{% bs_icon 'box-arrow-left' extra_classes="mx-1" %} Exit</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container mt-3 form-container">
+            <h1 class="text-center">Reporting Form</h1>
+            <p class="text-center">Please fill out all the following fields to report a health and/or safety violation:</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">{{ form.as_p }}</div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+
+        <footer class="mt-3 bg-light text-center text-black py-3" style="font-size: 0.75rem">
+            <p class="footer-small-text">&copy; 2024 CS 3240 Group B-12</p>
+            <p class="footer-small-text">Disclaimer: This system is a class project and is not monitored. Please do not submit real information.</p>
+        </footer>
+
+        {% bootstrap_javascript %}
+    </body>
+</html>
